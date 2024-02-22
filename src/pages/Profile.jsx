@@ -139,6 +139,14 @@ const Profile = () => {
                 );
               }
             })}
+
+            {books.length === 0 && (
+              <div className="my-32 text-center">
+                <h2 className="text-3xl font-light text-slate-300">
+                  The booklist is empty
+                </h2>
+              </div>
+            )}
           </div>
         </div>
       </div>
