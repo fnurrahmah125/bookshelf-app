@@ -10,7 +10,7 @@ const NotFound = () => {
     if (user === undefined) {
       setPage("/login");
     } else {
-      setPage("/home");
+      setPage("/");
     }
   }, [user]);
 

@@ -56,7 +56,7 @@ const EditBook = () => {
       };
 
       dispatch(updateBookToFireStore(payload));
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       const errororCode = error.code;
       const errorMessage = error.message;
@@ -141,7 +141,7 @@ const EditBook = () => {
             <div className="mt-8 grid grid-cols-3 gap-4 md:mt-12">
               <button
                 className="rounded-md border border-blue-500 py-2 tracking-wide text-blue-500 transition duration-300 hover:border-blue-700 hover:text-blue-700 md:col-start-2"
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/")}
               >
                 Cancel
               </button>

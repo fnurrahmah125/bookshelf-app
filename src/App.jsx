@@ -39,7 +39,7 @@ function App() {
     <Router>
       <Routes>
         <Route element={<PrivateRoutes />}>
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit/:id" element={<EditBook />} />
           <Route path="/add-book" element={<AddBook />} />

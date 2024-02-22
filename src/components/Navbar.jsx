@@ -55,7 +55,7 @@ const Navbar = () => {
           <ul>
             <li className="mb-3">
               <Link
-                to="/home"
+                to="/"
                 className="item flex w-full gap-2 rounded-md px-3 py-2 hover:bg-blue-600 hover:text-white "
               >
                 <GoHome className="text-xl" />
