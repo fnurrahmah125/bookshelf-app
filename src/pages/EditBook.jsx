@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Timestamp } from "firebase/firestore";
@@ -19,14 +19,12 @@ const EditBook = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPages, setCurrentPages] = useState(0);
 
-  const url = window.location.href;
-  const bookId = url.substring(url.lastIndexOf("/") + 1);
-
+  const bookId = useParams();
   const book = useSelector((state) => state.books.book);
 
   useEffect(() => {
-    dispatch(fetchBookFromFirestore(bookId));
-  }, [dispatch, bookId]);
+    dispatch(fetchBookFromFirestore(bookId.id));
+  }, [dispatch, bookId.id]);
 
   useEffect(() => {
     if (book) {
