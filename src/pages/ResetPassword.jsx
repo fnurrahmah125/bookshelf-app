@@ -2,7 +2,6 @@ import { useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../configs/firebase-config";
 import { Link, useNavigate } from "react-router-dom";
-import FormWrapper from "../components/FormWrapper";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -13,17 +12,15 @@ const ResetPassword = () => {
 
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        navigate("/reset-password/sent");
+        navigate("/send-reset-password");
       })
       .catch((error) => {
-        const errororCode = error.code;
-        const errorMessage = error.message;
-        console.log("Error occured: ", errororCode, errorMessage);
+        console.log("Error occured: ", error.code, error.message);
       });
   };
 
   return (
-    <FormWrapper>
+    <>
       <h1 className="mb-2 text-center text-xl font-bold">
         Forgot your password?
       </h1>
@@ -58,7 +55,7 @@ const ResetPassword = () => {
           Send
         </button>
       </form>
-    </FormWrapper>
+    </>
   );
 };
 

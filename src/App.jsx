@@ -1,58 +1,124 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./configs/firebase-config";
-import { useDispatch } from "react-redux";
-import { saveUser } from "./store/slices/authSlice";
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { GlobalProvider } from "./context/GlobalContext";
+import { AuthProvider } from "./context/AuthContext";
+import DefaultLayout from "./layouts/DefaultLayout";
+import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
-import Home from "./pages/Home";
-import Profile from "./pages/Profile";
+import SendResetPassword from "./pages/SendResetPassword";
+import AuthLayout from "./layouts/AuthLayout";
 import NotFound from "./pages/NotFound";
-import EmailSent from "./pages/EmailSent";
-import EditBook from "./pages/EditBook";
-import AddBook from "./pages/AddBook";
-import PrivateRoutes from "./utils/PrivateRoutes";
+import Profile from "./pages/Profile";
+import Form from "./pages/Form";
+import LoginRoute from "./routes/LoginRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import ChangePassword from "./pages/ChangePassword";
 
-function App() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const payload = {
-          uid: user.uid,
-          authToken: user.refreshToken,
-          email: user.email,
-          displayName: user.displayName,
-        };
-        dispatch(saveUser(payload));
-      } else {
-        dispatch(saveUser(undefined));
-      }
-    });
-  }, [auth, dispatch]);
-
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route element={<PrivateRoutes />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit/:id" element={<EditBook />} />
-          <Route path="/add-book" element={<AddBook />} />
-        </Route>
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/reset-password/sent" element={<EmailSent />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <GlobalProvider>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <DefaultLayout>
+                      <Homepage />
+                    </DefaultLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <DefaultLayout>
+                      <Profile />
+                    </DefaultLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/change-password"
+                element={
+                  <ProtectedRoute>
+                    <DefaultLayout>
+                      <ChangePassword />
+                    </DefaultLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add-book"
+                element={
+                  <ProtectedRoute>
+                    <DefaultLayout>
+                      <Form />
+                    </DefaultLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/edit-book/:id"
+                element={
+                  <ProtectedRoute>
+                    <DefaultLayout>
+                      <Form />
+                    </DefaultLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <LoginRoute>
+                    <AuthLayout>
+                      <Login />
+                    </AuthLayout>
+                  </LoginRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <LoginRoute>
+                    <AuthLayout>
+                      <Register />
+                    </AuthLayout>
+                  </LoginRoute>
+                }
+              />
+              <Route
+                path="/reset-password"
+                element={
+                  <LoginRoute>
+                    <AuthLayout>
+                      <ResetPassword />
+                    </AuthLayout>
+                  </LoginRoute>
+                }
+              />
+              <Route
+                path="/send-reset-password"
+                element={
+                  <LoginRoute>
+                    <AuthLayout>
+                      <SendResetPassword />
+                    </AuthLayout>
+                  </LoginRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </GlobalProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </>
   );
-}
+};
 
 export default App;

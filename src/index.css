@@ -27,11 +27,11 @@
     @apply bg-purple-100 text-purple-500;
   }
 
-  .active {
-    @apply rounded-full bg-blue-600 px-4 py-1 text-white;
+  .show {
+    @apply translate-x-0;
   }
 
-  .inactive {
-    @apply px-4 py-1 text-slate-500 hover:text-slate-800;
+  .hide {
+    @apply translate-x-full;
   }
 }

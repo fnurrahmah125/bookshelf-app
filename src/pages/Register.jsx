@@ -1,90 +1,124 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../configs/firebase-config";
 import { GoEyeClosed, GoEye } from "react-icons/go";
-import FormWrapper from "../components/FormWrapper";
+import { auth } from "../configs/firebase-config";
+import Swal from "sweetalert2";
 
 const Register = () => {
+  const [input, setInput] = useState({
+    name: "",
+    photo_url: "",
+    email: "",
+    password: "",
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [validation, setValidation] = useState("");
+  const handleChange = (e) => {
+    let value = e.target.value;
+    let name = e.target.name;
+
+    setInput({ ...input, [name]: value });
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    await createUserWithEmailAndPassword(auth, email, password)
+    await createUserWithEmailAndPassword(auth, input.email, input.password)
       .then(() => {
         updateProfile(auth.currentUser, {
-          displayName: username,
+          displayName: input.name,
+          photoURL: input.photo_url,
         });
+
+        Swal.fire({
+          text: "You have successfully registered",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
         navigate("/login");
       })
       .catch((error) => {
-        const errororCode = error.code;
-        const errorMessage = error.message;
-
-        if (errororCode == "auth/email-already-in-use") {
-          setValidation("The email address is already in use");
+        if (error.code == "auth/email-already-in-use") {
+          Swal.fire({
+            text: "The email address is already in use",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           return;
         }
 
-        console.log("Error occured: ", errororCode, errorMessage);
+        console.log("Error occured: ", error.code, error.message);
       });
   };
 
   return (
-    <FormWrapper title="Register">
+    <>
       <h1 className="mb-5 text-center text-4xl">Register</h1>
       <form className="text-sm" onSubmit={handleRegister}>
-        <label
-          htmlFor="username"
-          className="mb-2 inline-block w-full font-bold"
-        >
-          Username
+        <label htmlFor="name" className="mb-2 inline-block w-full font-bold">
+          Name <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          name="username"
-          id="username"
-          placeholder="Username"
-          className="mb-4 inline-block w-full rounded-md border border-slate-300 px-4 py-2 placeholder:font-light"
-          onChange={(e) => setUsername(e.target.value)}
+          name="name"
+          id="name"
+          placeholder="Name"
+          value={input.name}
+          className="mb-4 inline-block w-full rounded-md border border-slate-300 px-2.5 py-2 placeholder:font-light"
+          onChange={handleChange}
           required
         />
-
+        <label
+          htmlFor="photo_url"
+          className="mb-2 inline-block w-full font-bold"
+        >
+          Photo Url
+        </label>
+        <input
+          type="text"
+          name="photo_url"
+          id="photo_url"
+          placeholder="Photo Url"
+          value={input.photo_url}
+          className="mb-4 inline-block w-full rounded-md border border-slate-300 px-2.5 py-2 placeholder:font-light"
+          onChange={handleChange}
+        />
         <label htmlFor="email" className="mb-2 inline-block w-full font-bold">
-          Email
+          Email <span className="text-red-500">*</span>
         </label>
         <input
           type="email"
           name="email"
           id="email"
           placeholder="Email"
-          className="mb-4 inline-block w-full rounded-md border border-slate-300 px-4 py-2 placeholder:font-light"
-          onChange={(e) => setEmail(e.target.value)}
+          value={input.email}
+          className="mb-4 inline-block w-full rounded-md border border-slate-300 px-2.5 py-2 placeholder:font-light"
+          onChange={handleChange}
           required
         />
-
         <div className="relative inline-block w-full">
           <label
             htmlFor="password"
             className="mb-2 inline-block w-full font-bold"
           >
-            Password
+            Password <span className="text-red-500">*</span>
           </label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
             id="password"
             placeholder="Password"
+            value={input.password}
             minLength="6"
-            className="mb-4 inline-block w-full rounded-md border border-slate-300 px-4 py-2 placeholder:font-light"
-            onChange={(e) => setPassword(e.target.value)}
+            className="mb-4 inline-block w-full rounded-md border border-slate-300 px-2.5 py-2 placeholder:font-light"
+            onChange={handleChange}
             required
           />
           <span
@@ -98,8 +132,6 @@ const Register = () => {
             )}
           </span>
         </div>
-
-        {validation && <p className="mb-4 text-red-600">{validation}</p>}
 
         <button
           type="submit"
@@ -115,7 +147,7 @@ const Register = () => {
           </Link>
         </p>
       </form>
-    </FormWrapper>
+    </>
   );
 };
 

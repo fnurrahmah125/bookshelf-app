@@ -1,39 +1,60 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../configs/firebase-config";
 import { GoEyeClosed, GoEye } from "react-icons/go";
-import FormWrapper from "../components/FormWrapper";
+import { auth } from "../configs/firebase-config";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 const Login = () => {
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [validation, setValidation] = useState("");
+  const handleChange = (e) => {
+    let value = e.target.value;
+    let name = e.target.name;
+    setInput({ ...input, [name]: value });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
-    } catch (error) {
-      const errororCode = error.code;
-      const errorMessage = error.message;
+    await signInWithEmailAndPassword(auth, input.email, input.password)
+      .then((res) => {
+        const user = res.user;
+        Cookies.set("token", user.refreshToken);
 
-      if (errororCode == "auth/invalid-credential") {
-        setValidation("The username or password you entered is incorrect");
-        return;
-      }
+        Swal.fire({
+          text: "You have successfully logged in",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
-      console.log("Error occured: ", errororCode, errorMessage);
-    }
+        navigate("/");
+      })
+      .catch((error) => {
+        if (error.code == "auth/invalid-credential") {
+          Swal.fire({
+            text: "The username or password you entered is incorrect",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          return;
+        }
+        console.log("Error occured: ", error.code, error.message);
+      });
   };
 
   return (
-    <FormWrapper>
+    <>
       <h1 className="mb-5 text-center text-4xl">Login</h1>
       <form className="text-sm" onSubmit={handleLogin}>
         <label htmlFor="email" className="mb-2 inline-block w-full font-bold">
@@ -44,8 +65,9 @@ const Login = () => {
           name="email"
           id="email"
           placeholder="Email"
+          value={input.email}
           className="mb-4 inline-block w-full rounded-md border border-slate-300 px-4 py-2 placeholder:font-light"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleChange}
           required
         />
 
@@ -61,9 +83,10 @@ const Login = () => {
             name="password"
             id="password"
             placeholder="Password"
+            value={input.password}
             minLength="6"
             className=" mb-4 inline-block w-full rounded-md border border-slate-300 px-4 py-2 placeholder:font-light"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
             required
           />
           <span
@@ -84,8 +107,6 @@ const Login = () => {
           </Link>
         </p>
 
-        {validation && <p className="mt-4 text-red-600">{validation}</p>}
-
         <button
           type="submit"
           className="mb-6 mt-4 inline-block w-full rounded-md bg-blue-600 py-2 tracking-wide text-white transition duration-300 hover:bg-blue-800"
@@ -100,7 +121,7 @@ const Login = () => {
           </Link>
         </p>
       </form>
-    </FormWrapper>
+    </>
   );
 };
 

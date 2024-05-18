@@ -1,11 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import FormWrapper from "../components/FormWrapper";
+import { Link } from "react-router-dom";
 
-const EmailSent = () => {
-  const navigate = useNavigate();
-
+const SendResetPassword = () => {
   return (
-    <FormWrapper>
+    <>
       <h1 className="mb-2 text-center text-xl font-bold">
         Email has been sent!
       </h1>
@@ -14,13 +11,14 @@ const EmailSent = () => {
         password
       </p>
       <div className="text-sm">
-        <button
-          type="button"
-          className="inline-block w-full rounded-md bg-blue-600 py-2 tracking-wide text-white transition duration-300 hover:bg-blue-800"
-          onClick={() => navigate("/login")}
-        >
-          Login
-        </button>
+        <Link to="/login">
+          <button
+            type="button"
+            className="inline-block w-full rounded-md bg-blue-600 py-2 tracking-wide text-white transition duration-300 hover:bg-blue-800"
+          >
+            Login
+          </button>
+        </Link>
         <p className="mt-4 text-center">
           Didn&apos;t receive the link?{" "}
           <Link to="/reset-password" className="text-blue-600 ">
@@ -28,8 +26,8 @@ const EmailSent = () => {
           </Link>
         </p>
       </div>
-    </FormWrapper>
+    </>
   );
 };
 
-export default EmailSent;
+export default SendResetPassword;
